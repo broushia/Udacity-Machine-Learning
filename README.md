@@ -1,7 +1,7 @@
 # Machine-Learning
 Style Transfer using PyTorch
 
-I am a humble everything engineer that has managed to pick up a little bit of everything: mechanical, electrical, manufacturing, software, you name it. 
+I am a humble everything engineer that has managed to pick up a random grab bag of skills: some mechanical, a little electrical, a bit of manufacturing, software, you name it. 
 
 This is a bit of my coding focused on machine learning built, for now at least, in PyTorch. 
 
