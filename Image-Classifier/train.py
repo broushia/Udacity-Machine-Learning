@@ -1,6 +1,3 @@
-# This is in a folder, use this as a shortcut
-# python /home/workspace/aipnd-project/train.py aipnd-project
-
 import numpy as np
 import torch
 from torch import nn
@@ -34,8 +31,7 @@ def main():
     
     save_model(model, optimizer, in_arg.arch, in_arg.data_dir, in_arg.save_dir,image_data)
     
-    print("-"*40)
-      
+    print("-"*40)      
 
 if __name__ == "__main__":
     main()    
