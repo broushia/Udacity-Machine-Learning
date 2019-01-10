@@ -79,12 +79,12 @@ def load_images():
                                                     transforms.ToTensor(),
                                                     transforms.Normalize([0.485,0.456,0.406],
                                                                          [0.229,0.224,0.225])])}
-    # TODO: Load the datasets with ImageFolder
+    # Load the datasets with ImageFolder
     image_data = {'train': datasets.ImageFolder(dirs['train'], transform = data_transforms['train']),
                   'valid': datasets.ImageFolder(dirs['valid'], transform = data_transforms['valid']),
                   'test': datasets.ImageFolder(dirs['test'], transform = data_transforms['test'])}
 
-    # TODO: Using the image datasets and the transforms, define the dataloaders
+    # Using the image datasets and the transforms, define the dataloaders
     data_loader = {'train' : torch.utils.data.DataLoader(image_data['train'], batch_size=32, shuffle=True),
                    'valid' : torch.utils.data.DataLoader(image_data['valid'], batch_size=32, shuffle=False),
                    'test' : torch.utils.data.DataLoader(image_data['test'], batch_size=32, shuffle=False)}
@@ -119,13 +119,12 @@ def build_model(arch , hidden_units, learning_rate):
     classifier.dropout = nn.Dropout( p =0.1)
     model.classifier = classifier
 
-    criterion = nn.NLLLoss() #try out different functions
+    criterion = nn.NLLLoss()
     optimizer = optim.Adam(model.classifier.parameters(), lr=learning_rate) #remember to adjust learning rate as needed
     
     return model, optimizer, criterion
 
 def train_model(model, data_loader, epochs, criterion, optimizer, device = 'cpu'):
-    #move model to desired device: cuda or cpu
     print("\n   ---Model is training---")
     
     model.to(device)
@@ -143,36 +142,28 @@ def train_model(model, data_loader, epochs, criterion, optimizer, device = 'cpu'
             
             for images,labels in data_loader[mode]:
                 images, labels = images.to(device), labels.to(device)
-                #move images and labels to desired device: cuda or cpu
-                #be ready to debug this area, this didn't work great on the transfer learning section
                 
                 optimizer.zero_grad()
             
-                #move forward through model then back
                 outputs = model.forward(images)
                 _,predicted = torch.max(outputs.data, 1)            
                 loss = criterion(outputs, labels)
                 
-                #so it doesn't learn off validation, that would be bad
                 if mode == 'train':
                     loss.backward()
                     optimizer.step()
-                    #after seeing the 'hard' way of doing NN this just seems too easy. Make sure to hold on to fundementals
-                    #the WHY is more important than the how
             
                 running_loss += loss.item()*images.size(0)
                 correct += (predicted == labels).sum().item()
                 
             loss_data[mode] = (running_loss / len(data_loader[mode].dataset))                       
         
-        accuracy = (correct / len(data_loader[mode].dataset)) * 100
-        
-        #accuracy = (correct / len(image_data[mode])) * 100
-        
+        accuracy = (correct / len(data_loader[mode].dataset)) * 100       
+              
         print('\n   ---Epoch {}/{}---'.format(e+1,epochs))
         print('-'*40)
         print("Training Loss: {:.4f}  Validation Loss: {:.4f}  Accuracy: {:.0f}%\n".format(loss_data['train'],
-                                                                                         loss_data['valid'], accuracy))
+                                                                                           loss_data['valid'], accuracy))
     print("-"*40)    
     print('   Training Complete - Fingers Crossed')
 
@@ -195,8 +186,7 @@ def save_model(model, optimizer, arch, data_dir, save_dir, image_data):
     
     
 def load_model(file_path,device):
-    
-    #checkpoint = torch.load(file_path, map_location = {'cuda:0': 'cpu'}) 
+
     checkpoint = torch.load(file_path)
     
     if checkpoint["arch"] == "alexnet":
@@ -212,10 +202,8 @@ def load_model(file_path,device):
     for param in model.parameters():
         param.requires_grad = False
     
-    model.class_to_idx = checkpoint['class_to_idx']
-    
-    #rebuild classifier. I don't think I need input or out layers. Follow up
-    #I do for the train.py because of different pretrained
+    model.class_to_idx = checkpoint['class_to_idx']    
+
     classifier = nn.Sequential(OrderedDict([
                           ('layer0', nn.Linear(classifier_toplayer,checkpoint['hidden_layer'])), #add toplayer to checkpoint
                           ('relu0', nn.ReLU()),
@@ -283,9 +271,7 @@ def predict(image_path, model, j_son, topk=5, device = 'cpu'):
     image_tensor.unsqueeze_(0)
     
     output = model(image_tensor)
-      
-    #probs = output.topk(5)[0].data.cpu().numpy()
-    #classes = output.topk(5)[1].data.cpu().numpy()
+
     probs, classes = output.topk(topk)
     #there has got to be a better way but at least it works
     probs = torch.exp(probs)
