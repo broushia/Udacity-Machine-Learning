@@ -1,8 +1,3 @@
-# This is in a folder, use this as a shortcut
-# python /home/workspace/aipnd-project/predict.py
-
-# Test image and path
-# python /home/workspace/aipnd-project/predict.py aipnd-project/flowers/test/63/image_05878.jpg aipnd-project/checkpoint.pth
 import os
 import sys
 
