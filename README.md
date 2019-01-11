@@ -1,5 +1,4 @@
 # Machine-Learning
-Style Transfer using PyTorch
 
 I am a humble everything engineer that has managed to pick up a random grab bag of skills: some mechanical, a little electrical, a bit of manufacturing, software, you name it. 
 
